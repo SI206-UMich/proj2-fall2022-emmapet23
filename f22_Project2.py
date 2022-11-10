@@ -64,7 +64,7 @@ def get_listings_from_search_results(html_file):
     return tups_list
 
 
-    pass
+    #pass
 
 
 def get_listing_information(listing_id):
@@ -91,13 +91,64 @@ def get_listing_information(listing_id):
         number of bedrooms
     )
     """
+
+    
+    file = "html_files/" + "listing_" + listing_id + ".html"
+
+    f = open(file, "r")
+    soup = BeautifulSoup(f, "html.parser")
+    f.close()
+
+    #finding policy number
+    policy_parent = soup.find("li", class_ = "f19phm7j dir dir-ltr")
+    policy_num = policy_parent.find("span", class_ = "ll4r2nl dir dir-ltr").text
+    #print(policy_num)
+
+    #finding place type
+    place_parent = soup.find("div", class_ = "_cv5qq4")
+    place_type = place_parent.find("h2", class_ = "_14i3z6h").text
+    #print(place_type)
+
+    #finding number of bedrooms
+    bedrooms_parent = soup.find_all("li", class_ = "l7n4lsf dir dir-ltr")[1]
+    bedroom = bedrooms_parent.find_all("span")[2].text
+    #print(bedroom)
+
+    #making the pieces of the tuples
+    #making the policy num piece of tuple
+    if "pending" in policy_num.lower():
+        pol = "Pending"
+    elif "exempt" in policy_num.lower():
+        pol = "Exempt"
+    else:
+        pol = policy_num
+
+    #making place type of tuple
+    if "private" in place_type.lower():
+        type = "Private Room"
+    elif "shared" in place_type.lower():
+        type = "Shared Room"
+    else:
+        type = "Entire Room"
+    
+    #making bedroom number of tuple
+    if "studio" in bedroom.lower():
+        bed = 1
+    else:
+        bed = int(bedroom[0])
+    
+    #return a tuple: (pol_num, type, bed)
+    tup = (pol, type, bed)
+    print(tup)
+    return tup
+
     pass
 
 
 def get_detailed_listing_database(html_file):
     """
     Write a function that calls the above two functions in order to return
-    the complete listing information using the functions you’ve created.
+    the complete listing information using the functions you've created.
     This function takes in a variable representing the location of the search results html file.
     The return value should be in this format:
 
@@ -108,6 +159,18 @@ def get_detailed_listing_database(html_file):
         ...
     ]
     """
+
+    listing_from_sr = get_listings_from_search_results(html_file)
+    detailed_listing_data = []
+    for listing in listing_from_sr:
+        listing_id_from_sr = listing[2]
+        listing_info_tup = get_listing_information(listing_id_from_sr)
+
+        final_tup = listing + listing_info_tup
+        detailed_listing_data.append(final_tup)
+    print(detailed_listing_data)
+    return detailed_listing_data
+
     pass
 
 
@@ -133,6 +196,9 @@ def write_csv(data, filename):
 
     This function should not return anything.
     """
+
+    
+
     pass
 
 
@@ -281,4 +347,5 @@ if __name__ == '__main__':
     database = get_detailed_listing_database("html_files/mission_district_search_results.html")
     write_csv(database, "airbnb_dataset.csv")
     check_policy_numbers(database)
+    get_listing_information("1944564")
     unittest.main(verbosity=2)
