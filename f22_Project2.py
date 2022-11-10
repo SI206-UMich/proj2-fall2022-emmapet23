@@ -197,7 +197,16 @@ def write_csv(data, filename):
     This function should not return anything.
     """
 
-    
+    f = open(filename, "w")
+    f.write("Listing Title,Cost,Listing ID,Policy Number,Place Type,Number of Bedrooms" + "\n")
+    writer = csv.writer(f)
+
+    sorted_data = sorted(data, key=lambda t:t[1])
+    print(sorted_data)
+    for tup in sorted_data:
+        writer.writerow(tup)
+    return None
+
 
     pass
 
@@ -221,6 +230,21 @@ def check_policy_numbers(data):
     ]
 
     """
+    reg1 = "20\d{2}-00\d{4}STR"
+    reg2 = "STR-000\d{4}"
+
+    new_lst = []
+
+    for item in data:
+        policy_num = item[3]
+        id = item[2]
+        if policy_num.lower() == "pending" or policy_num.lower() == "exempt":
+            continue
+        elif len(re.findall(reg1, policy_num)) == 0 and len(re.findall(reg2, policy_num)) == 0:
+            new_lst.append(id)
+    return new_lst
+
+
     pass
 
 
