@@ -25,6 +25,45 @@ def get_listings_from_search_results(html_file):
         ('Loft in Mission District', 210, '1944564'),  # example
     ]
     """
+    import requests
+    f = open(html_file)
+    content = f.read()
+    soup = BeautifulSoup(content, "html.parser")
+    # print(soup)
+    f.close()
+
+    #all of the titles
+    titles_list = soup.find_all("div", class_ = "t1jojoys dir dir-ltr")
+    titles = []
+    for title in titles_list:
+        titles.append(title.text)
+    #print(titles)
+
+    #all of the costs
+    costs_list = soup.find_all("span", class_ = "_tyxjp1")
+    costs = []
+    for cost in costs_list:
+        int_cost = int(cost.text[1:])
+        costs.append(int_cost)
+    #print(costs)
+
+    #all of the ids
+    ids_list = soup.find_all("div", class_ = "t1jojoys dir dir-ltr")
+    ids = []
+    for id in ids_list:
+        get_id = id.get("id")[6:]
+        ids.append(get_id)
+    #print(ids)
+
+    #putting them in tuples
+    tups_list = []
+    for i in range(len(titles)):
+        tup = (titles[i], costs[i], ids[i])
+        tups_list.append(tup)
+    print(tups_list)
+    return tups_list
+
+
     pass
 
 
